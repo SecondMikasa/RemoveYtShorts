@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Remove YouTube Shorts from your feed
+// @name         Remove #shorts
 // @namespace    https://github.com/SecondMikasa
-// @version      0.2
-// @description  Removes YouTube Shorts Videos from your current page.
-// @author       Steven Hall (og)
+// @version      0.1
+// @description  Removes YouTube Shorts Videos from your main feed and redirect to youtube standard player.
+// @author       Kumar Arnim (og)
 // @match        https://*.youtube.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
 // @grant        none
@@ -55,3 +55,26 @@
         removeShorts();
     }
 )();
+var oldHref = document.location.href;
+if (window.location.href.indexOf('youtube.com/shorts') > -1) {
+    window.location.replace(window.location.toString().replace('/shorts/', '/watch?v='));
+}
+window.onload = function() {
+    var bodyList = document.querySelector("body")
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (oldHref != document.location.href) {
+                oldHref = document.location.href;
+                console.log('location changed!');
+                if (window.location.href.indexOf('youtube.com/shorts') > -1) {
+                    window.location.replace(window.location.toString().replace('/shorts/', '/watch?v='));
+                }
+            }
+        });
+    });
+    var config = {
+        childList: true,
+        subtree: true
+    };
+    observer.observe(bodyList, config);
+};
